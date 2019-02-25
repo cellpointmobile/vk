@@ -16,9 +16,12 @@ package program
 
 import (
 	"context"
+	"os"
 
 	"github.com/Masterminds/semver"
 	"github.com/google/go-github/github"
+	"github.com/gregjones/httpcache"
+	"github.com/gregjones/httpcache/diskcache"
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
 )
@@ -45,15 +48,18 @@ func IsLatestVersion(p IProgram) bool {
 func NewGithubClient() (*github.Client, context.Context) {
 	githubAPIToken := viper.GetString("github-api-token")
 	var client *github.Client
-	ctx := context.Background()
+	var ctx context.Context
+	cacheclient := httpcache.NewTransport(diskcache.New(os.ExpandEnv("$HOME/.vk/github-cache"))).Client()
 	if githubAPIToken != "" {
 		ts := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: githubAPIToken},
 		)
+		ctx = context.WithValue(context.Background(), oauth2.HTTPClient, cacheclient)
 		tc := oauth2.NewClient(ctx, ts)
 		client = github.NewClient(tc)
 	} else {
-		client = github.NewClient(nil)
+		ctx = context.Background()
+		client = github.NewClient(cacheclient)
 	}
 	return client, ctx
 }
