@@ -56,7 +56,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vk.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vk/config.yaml)")
 	rootCmd.PersistentFlags().StringP("bindir", "b", "$HOME/.local/bin", "Directory for bin-files.")
 
 	viper.BindPFlag("bindir", rootCmd.PersistentFlags().Lookup("bindir"))
