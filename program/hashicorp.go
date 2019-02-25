@@ -30,7 +30,8 @@ type HashicorpProgram struct {
 // GetLatestVersion returns the latest version number available
 func (p *HashicorpProgram) GetLatestVersion() (string, error) {
 	c, err := checkpoint.Check(&checkpoint.CheckParams{
-		Product: "terraform",
+		Product:   "terraform",
+		CacheFile: os.ExpandEnv("$HOME/.vk/hashicorp-cache"),
 	})
 	return c.CurrentVersion, err
 }
