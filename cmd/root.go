@@ -82,7 +82,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".vk" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".vk")
+		viper.SetConfigName(".vk/config")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
