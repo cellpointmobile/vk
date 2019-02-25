@@ -32,9 +32,23 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		"Version: (v.+?)\n",
 		"heptio",
 		"velero",
-		"ark-{VERSION}-linux-amd64.tar.gz",
+		"ark-{VVERSION}-linux-amd64.tar.gz",
+		false,
 		"",
 		"ark",
+	)
+
+	Progs["dive"] = program.NewGithubDownloadUntarFileProgram(
+		"dive",
+		path,
+		"version",
+		"dive (.+?)\n",
+		"wagoodman",
+		"dive",
+		"dive_{VERSION}_linux_amd64.tar.gz",
+		true,
+		"",
+		"dive",
 	)
 
 	Progs["docker-compose"] = program.NewGithubDirectDownloadProgram(
@@ -45,6 +59,7 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		"docker",
 		"compose",
 		"docker-compose-Linux-x86_64",
+		false,
 		"",
 	)
 
@@ -56,6 +71,7 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		"concourse",
 		"concourse",
 		"fly_linux_amd64",
+		false,
 		"",
 	)
 
@@ -67,7 +83,8 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		"kubernetes",
 		"helm",
 		"",
-		"https://storage.googleapis.com/kubernetes-helm/helm-{VERSION}-linux-amd64.tar.gz",
+		false,
+		"https://storage.googleapis.com/kubernetes-helm/helm-{VVERSION}-linux-amd64.tar.gz",
 		"linux-amd64/helm",
 	)
 
@@ -79,6 +96,7 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		"roboll",
 		"helmfile",
 		"helmfile_linux_amd64",
+		false,
 		"",
 	)
 
@@ -90,6 +108,7 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		"genuinetools",
 		"img",
 		"img-linux-amd64",
+		false,
 		"",
 	)
 
@@ -100,7 +119,8 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		"version (v.+?),",
 		"dtan4",
 		"k8sec",
-		"k8sec-{VERSION}-linux-amd64.tar.gz",
+		"k8sec-{VVERSION}-linux-amd64.tar.gz",
+		false,
 		"",
 		"linux-amd64/k8sec",
 	)
@@ -113,6 +133,7 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		"kubernetes",
 		"kops",
 		"kops-linux-amd64",
+		false,
 		"",
 	)
 
@@ -123,7 +144,8 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		"KustomizeVersion:(.+?) ",
 		"kubernetes-sigs",
 		"kustomize",
-		"kustomize_{VERSION}_linux_amd64",
+		"kustomize_{VVERSION}_linux_amd64",
+		false,
 		"",
 	)
 
@@ -135,6 +157,7 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		"kubernetes",
 		"minikube",
 		"minikube-linux-amd64",
+		false,
 		"",
 	)
 
@@ -146,6 +169,7 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		"wercker",
 		"stern",
 		"stern_linux_amd64",
+		false,
 		"",
 	)
 
@@ -162,7 +186,8 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		"(.+?)\n",
 		"segmentio",
 		"terraform-docs",
-		"terraform-docs-{VERSION}-linux-amd64",
+		"terraform-docs-{VVERSION}-linux-amd64",
+		false,
 		"",
 	)
 
@@ -174,6 +199,7 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		"wata727",
 		"tflint",
 		"tflint_linux_amd64.zip",
+		false,
 		"",
 		"tflint",
 	)

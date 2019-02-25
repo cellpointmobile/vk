@@ -31,6 +31,7 @@ type GithubProgram struct {
 	GithubRepo  string
 	ReleaseName string // Will be appended when generating Github download URL. Ex: kustomize_{VERSION}_linux_amd64
 	DownloadURL string // Optional, will be used instead of generating URL.
+	PreRelease  bool   // Accept prereleases. Defaults to false
 }
 
 // GithubDirectDownloadProgram downloads a file directly
@@ -55,13 +56,26 @@ type GithubDownloadUnzipFileProgram struct {
 
 // GetLatestVersion returns the latest version available
 func (p *GithubProgram) GetLatestVersion() (string, error) {
+	var v string
+	var err error
 	client, ctx := NewGithubClient()
-	latestRelease, _, err := client.Repositories.GetLatestRelease(ctx, p.GithubOwner, p.GithubRepo)
-	if _, ok := err.(*github.RateLimitError); ok {
-		fmt.Println("Github rate limit hit, please add personal API token.")
-		return "", err
+	if p.PreRelease {
+		listOptions := &github.ListOptions{PerPage: 1, Page: 1}
+		releases, _, err := client.Repositories.ListReleases(ctx, p.GithubOwner, p.GithubRepo, listOptions)
+		if _, ok := err.(*github.RateLimitError); ok {
+			fmt.Println("Github rate limit hit, please add personal API token.")
+			return "", err
+		}
+		v = releases[0].GetTagName()
+	} else {
+		latestRelease, _, err := client.Repositories.GetLatestRelease(ctx, p.GithubOwner, p.GithubRepo)
+		if _, ok := err.(*github.RateLimitError); ok {
+			fmt.Println("Github rate limit hit, please add personal API token.")
+			return "", err
+		}
+		v = latestRelease.GetTagName()
 	}
-	return *latestRelease.TagName, err
+	return strings.TrimPrefix(v, "v"), err
 }
 
 // GetLatestDownloadURL returns the URL to download the latest release
@@ -71,9 +85,10 @@ func (p *GithubProgram) GetLatestDownloadURL() string {
 	if err != nil {
 		panic("Can't get latest version.")
 	}
-	r := strings.NewReplacer("{VERSION}", version)
+	r := strings.NewReplacer("{VERSION}", version,
+		"{VVERSION}", "v"+version)
 	if p.DownloadURL == "" {
-		url = fmt.Sprintf("https://github.com/%s/%s/releases/download/{VERSION}/%s", p.GithubOwner, p.GithubRepo, p.ReleaseName)
+		url = fmt.Sprintf("https://github.com/%s/%s/releases/download/{VVERSION}/%s", p.GithubOwner, p.GithubRepo, p.ReleaseName)
 		url = r.Replace(url)
 	} else {
 		url = r.Replace(p.DownloadURL)
@@ -148,6 +163,7 @@ func NewGithubDirectDownloadProgram(
 	githubOwner string,
 	githubRepo string,
 	releaseName string,
+	prerelease bool,
 	downloadURL string) *GithubDirectDownloadProgram {
 	prog := &GithubDirectDownloadProgram{
 		Command: Command{
@@ -161,6 +177,7 @@ func NewGithubDirectDownloadProgram(
 			GithubRepo:  githubRepo,
 			ReleaseName: releaseName,
 			DownloadURL: downloadURL,
+			PreRelease:  prerelease,
 		},
 	}
 	return prog
@@ -175,6 +192,7 @@ func NewGithubDownloadUntarFileProgram(
 	githubOwner string,
 	githubRepo string,
 	releaseName string,
+	prerelease bool,
 	downloadURL string,
 	filename string) *GithubDownloadUntarFileProgram {
 	prog := &GithubDownloadUntarFileProgram{
@@ -189,6 +207,7 @@ func NewGithubDownloadUntarFileProgram(
 			GithubRepo:  githubRepo,
 			ReleaseName: releaseName,
 			DownloadURL: downloadURL,
+			PreRelease:  prerelease,
 		},
 		Filename: filename,
 	}
@@ -204,6 +223,7 @@ func NewGithubDownloadUnzipFileProgram(
 	githubOwner string,
 	githubRepo string,
 	releaseName string,
+	prerelease bool,
 	downloadURL string,
 	filename string) *GithubDownloadUnzipFileProgram {
 	prog := &GithubDownloadUnzipFileProgram{
@@ -218,6 +238,7 @@ func NewGithubDownloadUnzipFileProgram(
 			GithubRepo:  githubRepo,
 			ReleaseName: releaseName,
 			DownloadURL: downloadURL,
+			PreRelease:  prerelease,
 		},
 		Filename: filename,
 	}
