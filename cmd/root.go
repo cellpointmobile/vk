@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 
+	glogcobra "github.com/blocktop/go-glog-cobra"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -62,9 +63,7 @@ func init() {
 	viper.BindPFlag("bindir", rootCmd.PersistentFlags().Lookup("bindir"))
 	viper.SetDefault("bindir", "$HOME/.local/bin")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	glogcobra.Init(rootCmd)
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -91,4 +90,5 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+	glogcobra.Parse(rootCmd)
 }

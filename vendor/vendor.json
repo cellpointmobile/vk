@@ -21,6 +21,12 @@
 			"revisionTime": "2018-08-07T14:24:31Z"
 		},
 		{
+			"checksumSHA1": "CsvTCWE1bNN/OQBL6BWHlamDrnA=",
+			"path": "github.com/blocktop/go-glog-cobra",
+			"revision": "1a2e8060f5d24a33c21382d5fcc75346d3e260a5",
+			"revisionTime": "2018-10-04T14:11:47Z"
+		},
+		{
 			"checksumSHA1": "Cnp4TbxtikVXlA7NHpoeX9oERww=",
 			"path": "github.com/cavaliercoder/grab",
 			"revision": "56ebd2004ccecec0976880ec9521bd5ea4eff1e8",
