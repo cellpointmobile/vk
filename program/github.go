@@ -104,13 +104,17 @@ func (p *GithubDirectDownloadProgram) DownloadLatestVersion() string {
 	if err != nil {
 		panic("Can't get latest version.")
 	}
+	bak := f + ".bak"
+	os.Rename(f, bak)
 	_, err = grab.Get(f, p.GetLatestDownloadURL())
 	if err != nil {
+		os.Rename(bak, f)
 		panic(fmt.Sprintf("Could not download update to %s: %s", p.GetCmd(), err))
 	}
 	if err = os.Chmod(f, 0755); err != nil {
 		panic(err)
 	}
+	os.Remove(bak)
 	return v
 }
 
