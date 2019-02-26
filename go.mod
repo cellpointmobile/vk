@@ -5,6 +5,7 @@ require (
 	github.com/blocktop/go-glog-cobra v0.0.0-20181004141147-1a2e8060f5d2
 	github.com/cavaliercoder/grab v2.0.0+incompatible
 	github.com/christopherhein/go-version v0.0.0-20180807222509-fee8dd1f7c24
+	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c // indirect
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
