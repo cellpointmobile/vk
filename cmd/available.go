@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/drzero42/vk/program"
 
@@ -31,13 +32,19 @@ var availableCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		progs := programs.LoadPrograms(cmd.Flag("bindir").Value.String())
 		all, _ := cmd.Flags().GetBool("all")
-		for progname, prog := range progs {
+		keys := make([]string, 0, len(progs))
+		for k := range progs {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			prog := progs[k]
 			if all {
 				v, err := prog.GetLatestVersion()
 				if err != nil {
 					panic("Can't get latest version.")
 				}
-				fmt.Printf("%s version %s", progname, v)
+				fmt.Printf("%s version %s", prog.GetCmd(), v)
 				if prog.IsInstalled() {
 					if program.IsLatestVersion(prog) {
 						fmt.Printf(" (installed)")
@@ -53,7 +60,7 @@ var availableCmd = &cobra.Command{
 					if err != nil {
 						panic("Can't get latest version.")
 					}
-					fmt.Printf("%s version %s\n", progname, v)
+					fmt.Printf("%s version %s\n", prog.GetCmd(), v)
 				}
 			}
 		}
