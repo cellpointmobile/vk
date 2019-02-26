@@ -32,12 +32,14 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 	cacheclient := httpcache.NewTransport(diskcache.New(os.ExpandEnv("$HOME/.vk/definitions-cache"))).Client()
 	resp, err := cacheclient.Get("https://drzero42.github.io/vk-definitions/vk-definitions.json")
 	if err != nil {
-		panic(fmt.Sprintf("Could not download definitions: %s\n", err))
+		fmt.Fprintf(os.Stderr, "Could not download definitions: %s\n", err)
+		os.Exit(40)
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		panic(fmt.Sprintf("Could not download definitions: %s\n", err))
+		fmt.Fprintf(os.Stderr, "Could not download definitions: %s\n", err)
+		os.Exit(40)
 	}
 
 	directdownload := gjson.GetBytes(body, "github.directdownload")
@@ -51,7 +53,8 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		var prog program.GithubDirectDownloadProgram
 		err := json.Unmarshal([]byte(v.String()), &prog)
 		if err != nil {
-			panic(err)
+			fmt.Fprintf(os.Stderr, "Could not unmarshal definitions: %s\n", err)
+			os.Exit(50)
 		}
 		prog.Command.Path = path
 		progs[prog.Command.Cmd] = &prog
@@ -60,7 +63,8 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		var prog program.GithubDownloadUntarFileProgram
 		err := json.Unmarshal([]byte(v.String()), &prog)
 		if err != nil {
-			panic(err)
+			fmt.Fprintf(os.Stderr, "Could not unmarshal definitions: %s\n", err)
+			os.Exit(50)
 		}
 		prog.Command.Path = path
 		progs[prog.Command.Cmd] = &prog
@@ -69,7 +73,8 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		var prog program.GithubDownloadUnzipFileProgram
 		err := json.Unmarshal([]byte(v.String()), &prog)
 		if err != nil {
-			panic(err)
+			fmt.Fprintf(os.Stderr, "Could not unmarshal definitions: %s\n", err)
+			os.Exit(50)
 		}
 		prog.Command.Path = path
 		progs[prog.Command.Cmd] = &prog
@@ -78,7 +83,8 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 		var prog program.HashicorpProgram
 		err := json.Unmarshal([]byte(v.String()), &prog)
 		if err != nil {
-			panic(err)
+			fmt.Fprintf(os.Stderr, "Could not unmarshal definitions: %s\n", err)
+			os.Exit(50)
 		}
 		prog.Command.Path = path
 		progs[prog.Command.Cmd] = &prog

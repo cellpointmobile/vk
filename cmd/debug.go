@@ -17,6 +17,7 @@ package cmd
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/drzero42/vk/programs"
 	"github.com/spf13/cobra"
@@ -40,13 +41,15 @@ var debugCmd = &cobra.Command{
 			}
 			v, err := prog.GetLatestVersion()
 			if err != nil {
-				panic("Can't get latest version.")
+				fmt.Fprintln(os.Stderr, "Can't get latest version.")
+				os.Exit(10)
 			}
 			fmt.Printf("Latest version: %s\n", v)
 			url := prog.GetLatestDownloadURL()
 			resp, err := http.Get(url)
 			if err != nil {
-				panic(fmt.Sprintf("Something went wrong with the HTTP client: %s", err))
+				fmt.Fprintf(os.Stderr, "Something went wrong with the HTTP client: %s", err)
+				os.Exit(20)
 			}
 			if resp.StatusCode == 200 {
 				fmt.Printf("Download URL: %s\n", url)

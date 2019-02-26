@@ -16,6 +16,7 @@ package program
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/Masterminds/semver"
@@ -34,7 +35,8 @@ func IsLatestVersion(p IProgram) bool {
 	loV := p.GetLocalVersion()
 	laV, err := p.GetLatestVersion()
 	if err != nil {
-		panic("Can't get latest version.")
+		fmt.Fprintln(os.Stderr, "Can't get latest version.")
+		os.Exit(10)
 	}
 	localVersion := semver.MustParse(loV)
 	latestVersion := semver.MustParse(laV)

@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"sort"
 
 	"github.com/drzero42/vk/program"
@@ -42,7 +43,8 @@ var availableCmd = &cobra.Command{
 			if all {
 				v, err := prog.GetLatestVersion()
 				if err != nil {
-					panic("Can't get latest version.")
+					fmt.Fprintln(os.Stderr, "Can't get latest version.")
+					os.Exit(10)
 				}
 				fmt.Printf("%s version %s", prog.GetCmd(), v)
 				if prog.IsInstalled() {
@@ -58,7 +60,8 @@ var availableCmd = &cobra.Command{
 				if !prog.IsInstalled() {
 					v, err := prog.GetLatestVersion()
 					if err != nil {
-						panic("Can't get latest version.")
+						fmt.Fprintln(os.Stderr, "Can't get latest version.")
+						os.Exit(10)
 					}
 					fmt.Printf("%s version %s\n", prog.GetCmd(), v)
 				}

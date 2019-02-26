@@ -83,7 +83,8 @@ func (p *GithubProgram) GetLatestDownloadURL() string {
 	var url string
 	version, err := p.GetLatestVersion()
 	if err != nil {
-		panic("Can't get latest version.")
+		fmt.Fprintln(os.Stderr, "Can't get latest version.")
+		os.Exit(10)
 	}
 	r := strings.NewReplacer("{VERSION}", version,
 		"{VVERSION}", "v"+version)
@@ -102,17 +103,20 @@ func (p *GithubDirectDownloadProgram) DownloadLatestVersion() string {
 	f := filepath.Join(p.Path, p.Cmd)
 	v, err := p.GetLatestVersion()
 	if err != nil {
-		panic("Can't get latest version.")
+		fmt.Fprintln(os.Stderr, "Can't get latest version.")
+		os.Exit(10)
 	}
 	bak := f + ".bak"
 	os.Rename(f, bak)
 	_, err = grab.Get(f, p.GetLatestDownloadURL())
 	if err != nil {
 		os.Rename(bak, f)
-		panic(fmt.Sprintf("Could not download update to %s: %s", p.GetCmd(), err))
+		fmt.Fprintf(os.Stderr, "Could not download update to %s: %s", p.GetCmd(), err)
+		os.Exit(70)
 	}
 	if err = os.Chmod(f, 0755); err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Error setting chmod for downloaded file: %s", err)
+		os.Exit(80)
 	}
 	os.Remove(bak)
 	return v
@@ -123,17 +127,20 @@ func (p *GithubDownloadUntarFileProgram) DownloadLatestVersion() string {
 	f := filepath.Join(p.Path, p.Cmd)
 	v, err := p.GetLatestVersion()
 	if err != nil {
-		panic("Can't get latest version.")
+		fmt.Fprintln(os.Stderr, "Can't get latest version.")
+		os.Exit(10)
 	}
 	err = file.ExtractFromTar(
 		p.GetLatestDownloadURL(),
 		p.Filename,
 		f)
 	if err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Error extracting file from tarball: %s", err)
+		os.Exit(90)
 	}
 	if err = os.Chmod(f, 0755); err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Error setting chmod for downloaded file: %s", err)
+		os.Exit(80)
 	}
 	return v
 }
@@ -143,17 +150,20 @@ func (p *GithubDownloadUnzipFileProgram) DownloadLatestVersion() string {
 	f := filepath.Join(p.Path, p.Cmd)
 	v, err := p.GetLatestVersion()
 	if err != nil {
-		panic("Can't get latest version.")
+		fmt.Fprintln(os.Stderr, "Can't get latest version.")
+		os.Exit(10)
 	}
 	err = file.ExtractFromZip(
 		p.GetLatestDownloadURL(),
 		p.Filename,
 		f)
 	if err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Error extracting file from zip: %s", err)
+		os.Exit(90)
 	}
 	if err = os.Chmod(f, 0755); err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Error setting chmod for downloaded file: %s", err)
+		os.Exit(80)
 	}
 	return v
 }

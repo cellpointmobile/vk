@@ -15,6 +15,7 @@
 package program
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -37,7 +38,8 @@ func (p *Command) GetLocalVersion() string {
 	version := exec.Command(cmd, args...)
 	versionOut, err := version.Output()
 	if err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Error parsing version: %s", err)
+		os.Exit(60)
 	}
 	vr := regexp.MustCompile(p.VersionRegexp)
 	match := vr.FindStringSubmatch(

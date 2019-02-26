@@ -15,6 +15,7 @@
 package program
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -42,7 +43,8 @@ func (p *HashicorpProgram) GetLatestDownloadURL() string {
 		Product: "terraform",
 	})
 	if err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Error getting version from Checkpoint: %s", err)
+		os.Exit(100)
 	}
 	v := c.CurrentVersion
 	url := c.CurrentDownloadURL + p.Cmd + "_" + v + "_linux_amd64.zip"
@@ -54,17 +56,20 @@ func (p *HashicorpProgram) DownloadLatestVersion() string {
 	f := filepath.Join(p.Path, p.Cmd)
 	v, err := p.GetLatestVersion()
 	if err != nil {
-		panic("Can't get latest version.")
+		fmt.Fprintln(os.Stderr, "Can't get latest version.")
+		os.Exit(10)
 	}
 	err = file.ExtractFromZip(
 		p.GetLatestDownloadURL(),
 		p.Cmd,
 		f)
 	if err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Error extracting file from zip: %s", err)
+		os.Exit(90)
 	}
 	if err = os.Chmod(f, 0755); err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Error setting chmod for downloaded file: %s", err)
+		os.Exit(80)
 	}
 	return v
 }
