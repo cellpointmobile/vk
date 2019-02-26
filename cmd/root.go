@@ -89,8 +89,10 @@ func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Fprintf(os.Stderr, "Could not read config file: %s", err)
+		os.Exit(30)
+		// fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
 	glogcobra.Parse(rootCmd)
 }
