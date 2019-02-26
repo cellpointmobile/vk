@@ -8,6 +8,9 @@ builds:
       - amd64
     goos:
       - linux
+    ldflags:
+      - -s -w
+      - -X github.com/drzero42/vk/cmd.version={{.Version}} -X github.com/drzero42/vk/cmd.commit={{.ShortCommit}} -X github.com/drzero42/vk/cmd.date={{.Date}}
 archive:
   replacements:
     darwin: Darwin
