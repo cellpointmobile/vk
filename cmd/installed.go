@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/drzero42/vk/programs"
 	"github.com/spf13/cobra"
@@ -29,7 +30,13 @@ var installedCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("The following programs are installed:")
 		progs := programs.LoadPrograms(cmd.Flag("bindir").Value.String())
-		for _, prog := range progs {
+		keys := make([]string, 0, len(progs))
+		for k := range progs {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			prog := progs[k]
 			if prog.IsInstalled() {
 				fmt.Printf("%s: %s\n", prog.GetCmd(), prog.GetLocalVersion())
 			}
