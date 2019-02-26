@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/drzero42/vk/program"
 	"github.com/drzero42/vk/programs"
@@ -28,12 +29,37 @@ var updateCmd = &cobra.Command{
 	Short: "Update installed tools to latest version.",
 	Long: `Go through all installed tools, look up the latest version available
 	and update if the local version is not the latest.`,
+	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		progs := programs.LoadPrograms(cmd.Flag("bindir").Value.String())
-		for _, prog := range progs {
-			if prog.IsInstalled() && !program.IsLatestVersion(prog) {
-				v := prog.DownloadLatestVersion()
-				fmt.Printf("Updating %s to version %s\n", prog.GetCmd(), v)
+		if len(args) == 0 {
+			keys := make([]string, 0, len(progs))
+			for k := range progs {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			for _, k := range keys {
+				prog := progs[k]
+				if prog.IsInstalled() && !program.IsLatestVersion(prog) {
+					v := prog.DownloadLatestVersion()
+					fmt.Printf("Updating %s to version %s\n", prog.GetCmd(), v)
+				}
+			}
+		} else {
+			progname := args[0]
+			if prog, ok := progs[progname]; ok {
+				if prog.IsInstalled() {
+					if !program.IsLatestVersion(prog) {
+						v := prog.DownloadLatestVersion()
+						fmt.Printf("Updating %s to version %s\n", prog.GetCmd(), v)
+					} else {
+						fmt.Printf("%s is already latest version.\n", prog.GetCmd())
+					}
+				} else {
+					fmt.Printf("%s is not installed.", prog.GetCmd())
+				}
+			} else {
+				fmt.Printf("Unknown program: %s\n", progname)
 			}
 		}
 	},
