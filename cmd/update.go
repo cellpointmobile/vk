@@ -16,12 +16,15 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"sort"
 
 	"github.com/drzero42/vk/program"
 	"github.com/drzero42/vk/programs"
 	"github.com/spf13/cobra"
 )
+
+var quiet bool
 
 // updateCmd represents the update command
 var updateCmd = &cobra.Command{
@@ -43,7 +46,9 @@ var updateCmd = &cobra.Command{
 				if prog.IsInstalled() {
 					if !program.IsLatestVersion(prog) || force {
 						v := prog.DownloadLatestVersion()
-						fmt.Printf("Updating %s to version %s\n", prog.GetCmd(), v)
+						if !quiet {
+							fmt.Printf("Updating %s to version %s\n", prog.GetCmd(), v)
+						}
 					}
 				}
 			}
@@ -53,15 +58,19 @@ var updateCmd = &cobra.Command{
 				if prog.IsInstalled() {
 					if !program.IsLatestVersion(prog) || force {
 						v := prog.DownloadLatestVersion()
-						fmt.Printf("Updating %s to version %s\n", prog.GetCmd(), v)
+						if !quiet {
+							fmt.Printf("Updating %s to version %s\n", prog.GetCmd(), v)
+						}
 					} else {
-						fmt.Printf("%s is already latest version.\n", prog.GetCmd())
+						if !quiet {
+							fmt.Printf("%s is already latest version.\n", prog.GetCmd())
+						}
 					}
 				} else {
-					fmt.Printf("%s is not installed.", prog.GetCmd())
+					fmt.Fprintf(os.Stderr, "%s is not installed.", prog.GetCmd())
 				}
 			} else {
-				fmt.Printf("Unknown program: %s\n", progname)
+				fmt.Fprintf(os.Stderr, "Unknown program: %s\n", progname)
 			}
 		}
 	},
@@ -70,4 +79,5 @@ var updateCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(updateCmd)
 	updateCmd.Flags().BoolVar(&force, "force", false, "Force installation of tool, overwriting installed version.")
+	updateCmd.Flags().BoolVarP(&quiet, "quiet", "p", false, "Only output errors. Makes it suitable for cronjobs.")
 }
