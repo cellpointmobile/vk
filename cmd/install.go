@@ -31,12 +31,8 @@ var installCmd = &cobra.Command{
 		progname := args[0]
 		progs := programs.LoadPrograms(cmd.Flag("bindir").Value.String())
 		if prog, ok := progs[progname]; ok {
-			if !prog.IsInstalled() {
-				v, err := prog.GetLatestVersion()
-				if err != nil {
-					panic("Can't get latest version.")
-				}
-				prog.DownloadLatestVersion()
+			if !prog.IsInstalled() || force {
+				v := prog.DownloadLatestVersion()
 				fmt.Printf("%s version %s has been installed.\n", progname, v)
 			} else {
 				fmt.Printf("%s is already installed.\n", progname)
@@ -49,4 +45,5 @@ var installCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(installCmd)
+	installCmd.Flags().BoolVar(&force, "force", false, "Force installation of tool, overwriting installed version.")
 }

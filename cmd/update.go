@@ -40,16 +40,18 @@ var updateCmd = &cobra.Command{
 			sort.Strings(keys)
 			for _, k := range keys {
 				prog := progs[k]
-				if prog.IsInstalled() && !program.IsLatestVersion(prog) {
-					v := prog.DownloadLatestVersion()
-					fmt.Printf("Updating %s to version %s\n", prog.GetCmd(), v)
+				if prog.IsInstalled() {
+					if !program.IsLatestVersion(prog) || force {
+						v := prog.DownloadLatestVersion()
+						fmt.Printf("Updating %s to version %s\n", prog.GetCmd(), v)
+					}
 				}
 			}
 		} else {
 			progname := args[0]
 			if prog, ok := progs[progname]; ok {
 				if prog.IsInstalled() {
-					if !program.IsLatestVersion(prog) {
+					if !program.IsLatestVersion(prog) || force {
 						v := prog.DownloadLatestVersion()
 						fmt.Printf("Updating %s to version %s\n", prog.GetCmd(), v)
 					} else {
@@ -67,4 +69,5 @@ var updateCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(updateCmd)
+	updateCmd.Flags().BoolVar(&force, "force", false, "Force installation of tool, overwriting installed version.")
 }
