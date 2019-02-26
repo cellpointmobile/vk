@@ -6,6 +6,8 @@ github.com/blocktop/go-glog-cobra v0.0.0-20181004141147-1a2e8060f5d2 h1:MQItOp6r
 github.com/blocktop/go-glog-cobra v0.0.0-20181004141147-1a2e8060f5d2/go.mod h1:ZqRIKH3YGKtM09jQLuNc5f2ieVk1O8GXXfdzHUeH96Q=
 github.com/cavaliercoder/grab v2.0.0+incompatible h1:wZHbBQx56+Yxjx2TCGDcenhh3cJn7cCLMfkEPmySTSE=
 github.com/cavaliercoder/grab v2.0.0+incompatible/go.mod h1:tTBkfNqSBfuMmMBFaO2phgyhdYhiZQ/+iXCZDzcDsMI=
+github.com/christopherhein/go-version v0.0.0-20180807222509-fee8dd1f7c24 h1:d8f9tD3nkxUv6o5/+acC0KAsQ49zfsYySfUlIp3VduI=
+github.com/christopherhein/go-version v0.0.0-20180807222509-fee8dd1f7c24/go.mod h1:tgqmMD8WjbDm1T2Wrbzzgyey2Q+ph8t+gsWlALZwFvE=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
 github.com/coreos/go-etcd v2.0.0+incompatible/go.mod h1:Jez6KQU2B/sWsbdaef3ED8NzMklzPG4d5KIOhIy30Tk=
 github.com/coreos/go-semver v0.2.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=
