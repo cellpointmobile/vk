@@ -38,6 +38,27 @@ Limitations
 vk is not a full blown package manager. It can not install specific versions
 of tools, only the latest version.
 
+Supported tools
+===============
+Here are some tools that are supported. The list is not exhaustive and can will
+probably be expanded in the future.
+
+* [Ark|https://github.com/heptio/velero/] (recently renamed to Velero)
+* [Dive|https://github.com/wagoodman/dive]
+* [Docker-compose|https://github.com/docker/compose]
+* [Fly|https://github.com/concourse/concourse]
+* [Helm|https://github.com/helm/helm]
+* [Helmfile|https://github.com/roboll/helmfile]
+* [Img|https://github.com/genuinetools/img]
+* [K8sec|https://github.com/dtan4/k8sec]
+* [Kops|https://github.com/kubernetes/kops]
+* [Kustomize|https://github.com/kubernetes-sigs/kustomize]
+* [Minikube|https://github.com/kubernetes/minikube]
+* [Stern|https://github.com/wercker/stern]
+* [Terraform|https://www.terraform.io]
+* [terraform-docs|https://github.com/segmentio/terraform-docs]
+* [tflint|https://github.com/wata727/tflint]
+
 Getting started
 ===============
 vk is made to install tools for a single user, not system-wide. It has, for
