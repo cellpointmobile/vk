@@ -18,6 +18,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/golang/glog"
+
 	glogcobra "github.com/blocktop/go-glog-cobra"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -89,10 +91,8 @@ func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err != nil {
-		fmt.Fprintf(os.Stderr, "Could not read config file: %s", err)
-		os.Exit(30)
-		// fmt.Println("Using config file:", viper.ConfigFileUsed())
+	if err := viper.ReadInConfig(); err == nil {
+		glog.Infof("Using config file: %s\n", viper.ConfigFileUsed())
 	}
 	glogcobra.Parse(rootCmd)
 }
