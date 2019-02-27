@@ -1,4 +1,4 @@
-// Copyright © 2019 Anders Bruun Olsen <anders@bruun-olsen.net>
+// Copyright © 2019 Cellpoint Mobile
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/drzero42/vk/programs"
+	"github.com/cellpointmobile/vk/programs"
 	"github.com/spf13/cobra"
 )
 

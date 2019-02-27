@@ -1,4 +1,4 @@
-// Copyright © 2019 Anders Bruun Olsen <anders@bruun-olsen.net>
+// Copyright © 2019 Cellpoint Mobile
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/drzero42/vk/file"
+	"github.com/cellpointmobile/vk/file"
 	"github.com/hashicorp/go-checkpoint"
 )
 

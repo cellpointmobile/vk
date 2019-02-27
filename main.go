@@ -1,4 +1,4 @@
-// Copyright © 2019 Anders Bruun Olsen <anders@bruun-olsen.net>
+// Copyright © 2019 Cellpoint Mobile
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/drzero42/vk/cmd"
+import "github.com/cellpointmobile/vk/cmd"
 
 func main() {
 	cmd.Execute()

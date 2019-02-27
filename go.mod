@@ -1,4 +1,4 @@
-module github.com/drzero42/vk
+module github.com/cellpointmobile/vk
 
 require (
 	github.com/Masterminds/semver v1.4.2

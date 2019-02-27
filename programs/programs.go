@@ -1,4 +1,4 @@
-// Copyright © 2019 Anders Bruun Olsen <anders@bruun-olsen.net>
+// Copyright © 2019 Cellpoint Mobile
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/drzero42/vk/program"
+	"github.com/cellpointmobile/vk/program"
 	"github.com/gregjones/httpcache"
 	"github.com/gregjones/httpcache/diskcache"
 	"github.com/tidwall/gjson"
@@ -30,7 +30,7 @@ import (
 func LoadPrograms(bindir string) map[string]program.IProgram {
 	path := os.ExpandEnv(bindir)
 	cacheclient := httpcache.NewTransport(diskcache.New(os.ExpandEnv("$HOME/.vk/definitions-cache"))).Client()
-	resp, err := cacheclient.Get("https://drzero42.github.io/vk-definitions/vk-definitions.json")
+	resp, err := cacheclient.Get("https://cellpointmobile.github.io/vk-definitions/vk-definitions.json")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not download definitions: %s\n", err)
 		os.Exit(40)
