@@ -25,8 +25,10 @@ rename the binary to just vk, move it into the directory and give it execute
 permission with `chmod +x vk`. Because vk is created just like the tools it
 supports, it can keep itself updated (and even uninstall itself!).
 
-Quick install: `curl -Lo ~/.local/bin/vk https://github.com/cellpointmobile/vk/releases/download/v0.2.1/vk_0.2.1_Linux_x86_64 \
-  && chmod +x ~/.local/bin/vk`
+Quick install:
+```
+curl -Lo ~/.local/bin/vk https://github.com/cellpointmobile/vk/releases/download/v0.2.2/vk_0.2.2_Linux_x86_64 && chmod +x ~/.local/bin/vk
+```
 
 Supported tools
 ===============
