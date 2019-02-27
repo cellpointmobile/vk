@@ -32,6 +32,13 @@ To configure your bash shell to load completions for each session add to your ba
 
 # ~/.bashrc or ~/.profile
 source <(vk completion bash)
+
+To configure your zsh to load completions add to your zshrc:
+# ~/.zshrc
+if [ $commands[vk] ]; then
+  source <(vk completion zsh)
+fi
+
 `,
 	ValidArgs: []string{"bash", "zsh"},
 	// Switch to cobra.ExactValidArgs(1) when new release of Cobra happens.
