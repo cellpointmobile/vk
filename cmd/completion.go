@@ -31,7 +31,7 @@ source <(vk completion [bash|zsh])
 To configure your bash shell to load completions for each session add to your bashrc
 
 # ~/.bashrc or ~/.profile
-. <(vk completion bash)
+source <(vk completion bash)
 `,
 	ValidArgs: []string{"bash", "zsh"},
 	// Switch to cobra.ExactValidArgs(1) when new release of Cobra happens.
