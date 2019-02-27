@@ -61,9 +61,12 @@ func init() {
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vk/config.yaml)")
 	rootCmd.PersistentFlags().StringP("bindir", "b", "$HOME/.local/bin", "Directory for bin-files.")
+	rootCmd.PersistentFlags().String("definitions-url", "", "Download definitions from this URL.")
 
 	viper.BindPFlag("bindir", rootCmd.PersistentFlags().Lookup("bindir"))
 	viper.SetDefault("bindir", "$HOME/.local/bin")
+	viper.BindPFlag("definitions-url", rootCmd.PersistentFlags().Lookup("definitions-url"))
+	viper.SetDefault("definitions-url", "https://cellpointmobile.github.io/vk-definitions/vk-definitions.json")
 
 	glogcobra.Init(rootCmd)
 }

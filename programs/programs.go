@@ -23,6 +23,7 @@ import (
 	"github.com/cellpointmobile/vk/program"
 	"github.com/gregjones/httpcache"
 	"github.com/gregjones/httpcache/diskcache"
+	"github.com/spf13/viper"
 	"github.com/tidwall/gjson"
 )
 
@@ -30,7 +31,8 @@ import (
 func LoadPrograms(bindir string) map[string]program.IProgram {
 	path := os.ExpandEnv(bindir)
 	cacheclient := httpcache.NewTransport(diskcache.New(os.ExpandEnv("$HOME/.vk/definitions-cache"))).Client()
-	resp, err := cacheclient.Get("https://cellpointmobile.github.io/vk-definitions/vk-definitions.json")
+	url := viper.GetString("definitions-url")
+	resp, err := cacheclient.Get(url)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not download definitions: %s\n", err)
 		os.Exit(40)
