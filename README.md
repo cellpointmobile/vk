@@ -1,6 +1,6 @@
 vk installs and updates single-binary programs from Github and Hashicorp.
 
-vk is an abbreviation of værktøjskasse [ˈvæɐ̯gtʌjs-], which is a danish word
+vk is an abbreviation of værktøjskasse *[ˈvæɐ̯gtʌjs-]*, which is a danish word
 meaning toolbox.
 
 Problem abstract
@@ -41,54 +41,63 @@ of tools, only the latest version.
 Getting started
 ===============
 vk is made to install tools for a single user, not system-wide. It has, for
-now, been hardcoded to use the directory $HOME/.local/bin. Before you start,
+now, been hardcoded to use the directory `$HOME/.local/bin`. Before you start,
 you have to ensure this directory is present and that you modify your PATH to
 include it. When this has happened, go download the latest release of vk,
 rename the binary to just vk, move it into the directory and give it execute
-permission with "chmod +x vk". Because vk is created just like the tools it
+permission with `chmod +x vk`. Because vk is created just like the tools it
 supports, it can keep itself updated (and even uninstall itself!).
 
 Usage
 =====
 To list tools that vk can install use the subcommand "available":
-
-  vk available
+```
+vk available
+```
 
 Optionally add the flag --all to also include already installed tools in the 
 list.
 
 To install a tool use the subcommand "install":
-
-  vk install minikube
+```
+vk install minikube
+```
 
 To update all installed tools use the subcommand "update":
-
-  vk update
+```
+vk update
+```
 
 To install a specific tool only, also specify the tool in the "update" subcommand:
-
-  vk update minikube
+```
+vk update minikube
+```
 
 To list installed tools use the subcommand "installed":
-
-  vk installed
+```
+vk installed
+```
 
 To uninstall a tool use the subcommand "uninstall":
-
-  vk uninstall minikube
+```
+vk uninstall minikube
+```
 
 If you want to run update in a cronjob, there is a quiet flag you can use:
-
-  vk update --quiet
+```
+vk update --quiet
+```
 
 Update and install can also be forced to download and overwrite the local 
 version with the latest version, even if the are the same:
-
-  vk [install|update] minikube --force
+```
+vk [install|update] minikube --force
+```
 
 Bash/Zsh completion is available from the "completion" subcommand:
-
-  source <(vk completion [bash|zsh])
+```
+source <(vk completion [bash|zsh])
+```
 
 Tool definitions
 ================
