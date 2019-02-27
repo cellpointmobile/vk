@@ -9,6 +9,7 @@ Table of contents
 - [Getting started](#getting-started)
 - [Supported tools](#supported-tools)
 - [Usage](#usage)
+- [Configuring](#configuring)
 - [Github API rate limiting](#github-api-rate-limiting)
 - [Problem abstract](#problem-abstract)
 - [The solution](#the-solution)
@@ -17,13 +18,13 @@ Table of contents
 
 Getting started
 ===============
-vk is made to install tools for a single user, not system-wide. It has, for
-now, been hardcoded to use the directory `$HOME/.local/bin`. Before you start,
-you have to ensure this directory is present and that you modify your PATH to
-include it. When this has happened, go download the latest release of vk,
-rename the binary to just vk, move it into the directory and give it execute
-permission with `chmod +x vk`. Because vk is created just like the tools it
-supports, it can keep itself updated (and even uninstall itself!).
+vk is made to install tools for a single user, not system-wide. It defaults to
+use the directory `$HOME/.local/bin` for tools, but this is configurable.
+Before you start, you have to ensure this directory is present and that you
+modify your PATH to include it. When this has happened, go download the latest
+release of vk, rename the binary to just vk, move it into the directory and
+give it execute permission with `chmod +x vk`. Because vk is created just like
+the tools it supports, it can keep itself updated (and even uninstall itself!).
 
 Quick install:
 ```
@@ -101,6 +102,20 @@ Bash/Zsh completion is available from the "completion" subcommand:
 ```
 source <(vk completion [bash|zsh])
 ```
+
+It is possible to change which directory to use for bin files, by using the
+global flag `--bindir`. You can also set the bindir config var, to avoid
+passing the flag on every run. The flag overrides the config var.
+
+Configuring
+===========
+Certain things can be configured by creating a file called ~/.vk/config.yaml.
+The following variables can be set:
+
+* `bindir` - the path to where bin files are located. Defaults to $HOME/.local/bin
+  The directory must exist and should be in your $PATH. 
+* `github-api-token` - A Github personal access token with the scope public_repo.
+  This token is used for API calls to Github to allow for a larger rate limit.
 
 Github API rate limiting
 ========================
