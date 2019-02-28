@@ -108,7 +108,7 @@ global flag `--bindir`. You can also set the bindir config var, to avoid
 passing the flag on every run. The flag overrides the config var.
 
 It is also possible to change which URL to download the definitions from by
-using the global flag `--definitions-url`. This is also available as a config
+using the global flag `--definitions`. This is also available as a config
 variable.
 
 Configuring
@@ -120,7 +120,8 @@ The following variables can be set:
   The directory must exist and should be in your $PATH. 
 * `github-api-token` - A Github personal access token with the scope public_repo.
   This token is used for API calls to Github to allow for a larger rate limit.
-* `definitions-url` - The URL where the definitions file is available.
+* `definitions` - The URL where the definitions file is available. Can be a 
+  local path.
 
 Github API rate limiting
 ========================

@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/cellpointmobile/vk/program"
 	"github.com/gregjones/httpcache"
@@ -30,24 +31,37 @@ import (
 // LoadPrograms returns a map of programs
 func LoadPrograms(bindir string) map[string]program.IProgram {
 	path := os.ExpandEnv(bindir)
-	cacheclient := httpcache.NewTransport(diskcache.New(os.ExpandEnv("$HOME/.vk/definitions-cache"))).Client()
-	url := viper.GetString("definitions-url")
-	resp, err := cacheclient.Get(url)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not download definitions: %s\n", err)
-		os.Exit(40)
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not download definitions: %s\n", err)
-		os.Exit(40)
+	url := viper.GetString("definitions")
+	var d []byte
+	var err error
+	if strings.HasPrefix(url, "http") {
+		cacheclient := httpcache.NewTransport(diskcache.New(os.ExpandEnv("$HOME/.vk/definitions-cache"))).Client()
+		resp, err := cacheclient.Get(url)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not download definitions: %s\n", err)
+			os.Exit(40)
+		}
+		defer resp.Body.Close()
+		d, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not download definitions: %s\n", err)
+			os.Exit(40)
+		}
+	} else if strings.HasPrefix(url, "/") {
+		d, err = ioutil.ReadFile(url)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error loading definitions: %s\n", err)
+			os.Exit(120)
+		}
+	} else {
+		fmt.Fprintf(os.Stderr, "Unknown scheme for definitions location: %s\n", url)
+		os.Exit(110)
 	}
 
-	directdownload := gjson.GetBytes(body, "github.directdownload")
-	untarfile := gjson.GetBytes(body, "github.untarfile")
-	unzipfile := gjson.GetBytes(body, "github.unzipfile")
-	hashicorp := gjson.GetBytes(body, "hashicorp")
+	directdownload := gjson.GetBytes(d, "github.directdownload")
+	untarfile := gjson.GetBytes(d, "github.untarfile")
+	unzipfile := gjson.GetBytes(d, "github.unzipfile")
+	hashicorp := gjson.GetBytes(d, "hashicorp")
 
 	progs := make(map[string]program.IProgram)
 
