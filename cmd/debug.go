@@ -43,13 +43,13 @@ func debugProgram(p program.IProgram) {
 	url := p.GetLatestDownloadURL()
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Something went wrong with the HTTP client: %s", err)
+		fmt.Fprintf(os.Stderr, "Something went wrong with the HTTP client: %s\n", err)
 		os.Exit(20)
 	}
 	if resp.StatusCode == 200 {
 		fmt.Printf("Download URL: %s\n", url)
 	} else {
-		fmt.Printf("Invalid DownloadURL: %s (Status code %d)", url, resp.StatusCode)
+		fmt.Printf("Invalid DownloadURL: %s (Status code %d)\n", url, resp.StatusCode)
 	}
 }
 
