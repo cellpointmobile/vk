@@ -47,15 +47,12 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 			fmt.Fprintf(os.Stderr, "Could not download definitions: %s\n", err)
 			os.Exit(40)
 		}
-	} else if strings.HasPrefix(url, "/") {
+	} else {
 		d, err = ioutil.ReadFile(url)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error loading definitions: %s\n", err)
 			os.Exit(120)
 		}
-	} else {
-		fmt.Fprintf(os.Stderr, "Unknown scheme for definitions location: %s\n", url)
-		os.Exit(110)
 	}
 
 	directdownload := gjson.GetBytes(d, "github.directdownload")
