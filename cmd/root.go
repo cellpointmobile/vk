@@ -19,6 +19,7 @@ import (
 	"os"
 
 	glogcobra "github.com/blocktop/go-glog-cobra"
+	"github.com/cellpointmobile/vk/program"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -62,6 +63,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vk/config.yaml)")
 	rootCmd.PersistentFlags().StringP("bindir", "b", "$HOME/.local/bin", "Directory for bin-files.")
 	rootCmd.PersistentFlags().String("definitions", "", "URL/path to definitions file.")
+	rootCmd.PersistentFlags().BoolVar(&program.ClearCache, "clear-cache", false, "clear the cache.")
 
 	viper.BindPFlag("bindir", rootCmd.PersistentFlags().Lookup("bindir"))
 	viper.SetDefault("bindir", "$HOME/.local/bin")

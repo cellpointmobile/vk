@@ -27,6 +27,9 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// ClearCache variable for clear-cache flag
+var ClearCache bool
+
 // IsLatestVersion returns true if installed program is latest version.
 func IsLatestVersion(p IProgram) bool {
 	if !p.IsInstalled() {
@@ -51,7 +54,11 @@ func NewGithubClient() (*github.Client, context.Context) {
 	githubAPIToken := viper.GetString("github-api-token")
 	var client *github.Client
 	var ctx context.Context
-	cacheclient := httpcache.NewTransport(diskcache.New(os.ExpandEnv("$HOME/.vk/github-cache"))).Client()
+	githubCache := os.ExpandEnv("$HOME/.vk/github-cache")
+	if ClearCache {
+		os.RemoveAll(githubCache)
+	}
+	cacheclient := httpcache.NewTransport(diskcache.New(githubCache)).Client()
 	if githubAPIToken != "" {
 		ts := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: githubAPIToken},

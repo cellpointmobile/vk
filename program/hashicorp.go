@@ -32,24 +32,25 @@ type HashicorpProgram struct {
 // GetLatestVersion returns the latest version number available
 func (p *HashicorpProgram) GetLatestVersion() (string, error) {
 	cmd := p.GetCmd()
+	cache := os.ExpandEnv("$HOME/.vk/checkpoint-cache/" + cmd)
+	if ClearCache {
+		os.RemoveAll(cache)
+	}
 	c, err := checkpoint.Check(&checkpoint.CheckParams{
 		Product:   cmd,
-		CacheFile: os.ExpandEnv("$HOME/.vk/checkpoint-cache/" + cmd),
+		CacheFile: cache,
 	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error getting version from Checkpoint: %s", err)
+		os.Exit(100)
+	}
 	return c.CurrentVersion, err
 }
 
 // GetLatestDownloadURL return the URL to download the latest version from
 func (p *HashicorpProgram) GetLatestDownloadURL() string {
 	cmd := p.GetCmd()
-	c, err := checkpoint.Check(&checkpoint.CheckParams{
-		Product: cmd,
-	})
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error getting version from Checkpoint: %s", err)
-		os.Exit(100)
-	}
-	v := c.CurrentVersion
+	v, _ := p.GetLatestVersion()
 	r := strings.NewReplacer(
 		"{VERSION}", v,
 		"{VVERSION}", "v"+v,

@@ -34,8 +34,12 @@ func LoadPrograms(bindir string) map[string]program.IProgram {
 	url := viper.GetString("definitions")
 	var d []byte
 	var err error
+	definitionsCache := os.ExpandEnv("$HOME/.vk/definitions-cache")
+	if program.ClearCache {
+		os.RemoveAll(definitionsCache)
+	}
 	if strings.HasPrefix(url, "http") {
-		cacheclient := httpcache.NewTransport(diskcache.New(os.ExpandEnv("$HOME/.vk/definitions-cache"))).Client()
+		cacheclient := httpcache.NewTransport(diskcache.New(definitionsCache)).Client()
 		resp, err := cacheclient.Get(url)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not download definitions: %s\n", err)
