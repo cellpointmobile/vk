@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/cellpointmobile/vk/file"
 	"github.com/hashicorp/go-checkpoint"
@@ -30,25 +31,31 @@ type HashicorpProgram struct {
 
 // GetLatestVersion returns the latest version number available
 func (p *HashicorpProgram) GetLatestVersion() (string, error) {
+	cmd := p.GetCmd()
 	c, err := checkpoint.Check(&checkpoint.CheckParams{
-		Product:   "terraform",
-		CacheFile: os.ExpandEnv("$HOME/.vk/hashicorp-cache"),
+		Product:   cmd,
+		CacheFile: os.ExpandEnv("$HOME/.vk/checkpoint-cache/" + cmd),
 	})
 	return c.CurrentVersion, err
 }
 
 // GetLatestDownloadURL return the URL to download the latest version from
 func (p *HashicorpProgram) GetLatestDownloadURL() string {
+	cmd := p.GetCmd()
 	c, err := checkpoint.Check(&checkpoint.CheckParams{
-		Product: "terraform",
+		Product: cmd,
 	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error getting version from Checkpoint: %s", err)
 		os.Exit(100)
 	}
 	v := c.CurrentVersion
-	url := c.CurrentDownloadURL + p.Cmd + "_" + v + "_linux_amd64.zip"
-	return url
+	r := strings.NewReplacer(
+		"{VERSION}", v,
+		"{VVERSION}", "v"+v,
+		"{CMD}", cmd)
+	url := "https://releases.hashicorp.com/{CMD}/{VERSION}/{CMD}_{VERSION}_linux_amd64.zip"
+	return r.Replace(url)
 }
 
 // DownloadLatestVersion downloads and extracts the latest version
