@@ -75,19 +75,3 @@ func (p *HashicorpProgram) DownloadLatestVersion() string {
 	}
 	return v
 }
-
-// NewHashicorpProgram returns a new HashicorpProgram
-func NewHashicorpProgram(
-	cmd string,
-	path string,
-	versionRegexp string) *HashicorpProgram {
-	prog := &HashicorpProgram{
-		Command: Command{
-			Cmd:           cmd,
-			Path:          path,
-			VersionArg:    "version",
-			VersionRegexp: versionRegexp,
-		},
-	}
-	return prog
-}
