@@ -41,7 +41,7 @@ var availableCmd = &cobra.Command{
 		for _, k := range keys {
 			prog := progs[k]
 			if all {
-				v, err := prog.GetLatestVersion()
+				v, _, err := prog.GetLatestVersion()
 				if err != nil {
 					fmt.Fprintln(os.Stderr, "Can't get latest version.")
 					os.Exit(10)
@@ -58,7 +58,7 @@ var availableCmd = &cobra.Command{
 				fmt.Printf("\n")
 			} else {
 				if !prog.IsInstalled() {
-					v, err := prog.GetLatestVersion()
+					v, _, err := prog.GetLatestVersion()
 					if err != nil {
 						fmt.Fprintln(os.Stderr, "Can't get latest version.")
 						os.Exit(10)

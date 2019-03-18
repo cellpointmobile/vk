@@ -34,13 +34,12 @@ func debugProgram(p program.IProgram) {
 	if isInstalled {
 		fmt.Printf("Local version: %s\n", p.GetLocalVersion())
 	}
-	v, err := p.GetLatestVersion()
+	v, url, err := p.GetLatestVersion()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Can't get latest version.")
 		os.Exit(10)
 	}
 	fmt.Printf("Latest version: %s\n", v)
-	url := p.GetLatestDownloadURL()
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Something went wrong with the HTTP client: %s\n", err)

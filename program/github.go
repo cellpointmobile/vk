@@ -15,6 +15,7 @@
 package program
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -54,61 +55,69 @@ type GithubDownloadUnzipFileProgram struct {
 	Filename string
 }
 
+func findAsset(r []*github.ReleaseAsset, name string) (*github.ReleaseAsset, error) {
+	for _, x := range r {
+		if *x.Name == name {
+			return x, nil
+		}
+	}
+	return nil, errors.New("can't find asset")
+}
+
 // GetLatestVersion returns the latest version available
-func (p *GithubProgram) GetLatestVersion() (string, error) {
-	var v string
+func (p *GithubProgram) GetLatestVersion() (string, string, error) {
 	var err error
+	var r *github.RepositoryRelease
+	var u string
 	client, ctx := NewGithubClient()
 	if p.PreRelease {
 		listOptions := &github.ListOptions{PerPage: 1, Page: 1}
 		releases, _, err := client.Repositories.ListReleases(ctx, p.GithubOwner, p.GithubRepo, listOptions)
 		if _, ok := err.(*github.RateLimitError); ok {
 			fmt.Println("Github rate limit hit, please add personal API token.")
-			return "", err
+			return "", "", err
 		}
-		v = releases[0].GetTagName()
+		r = releases[0]
 	} else {
 		latestRelease, _, err := client.Repositories.GetLatestRelease(ctx, p.GithubOwner, p.GithubRepo)
 		if _, ok := err.(*github.RateLimitError); ok {
 			fmt.Println("Github rate limit hit, please add personal API token.")
-			return "", err
+			return "", "", err
 		}
-		v = latestRelease.GetTagName()
+		r = latestRelease
 	}
-	return strings.TrimPrefix(v, "v"), err
-}
-
-// GetLatestDownloadURL returns the URL to download the latest release
-func (p *GithubProgram) GetLatestDownloadURL() string {
-	var url string
-	version, err := p.GetLatestVersion()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Can't get latest version.")
-		os.Exit(10)
-	}
-	r := strings.NewReplacer("{VERSION}", version,
-		"{VVERSION}", "v"+version)
+	v := strings.TrimPrefix(r.GetTagName(), "v")
+	rx := strings.NewReplacer("{VERSION}", v)
 	if p.DownloadURL == "" {
-		url = fmt.Sprintf("https://github.com/%s/%s/releases/download/{VVERSION}/%s", p.GithubOwner, p.GithubRepo, p.ReleaseName)
-		url = r.Replace(url)
+		rn := rx.Replace(p.ReleaseName)
+		la, _, err := client.Repositories.ListReleaseAssets(ctx, p.GithubOwner, p.GithubRepo, *r.ID, &github.ListOptions{})
+		if _, ok := err.(*github.RateLimitError); ok {
+			fmt.Println("Github rate limit hit, please add personal API token.")
+			return "", "", err
+		}
+		a, err := findAsset(la, rn)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error finding asset.")
+			os.Exit(200)
+		}
+		u = a.GetBrowserDownloadURL()
 	} else {
-		url = r.Replace(p.DownloadURL)
+		u = rx.Replace(p.DownloadURL)
 	}
-
-	return url
+	return v, u, err
 }
 
 // DownloadLatestVersion downloads the latest release and puts it into the bindir
 func (p *GithubDirectDownloadProgram) DownloadLatestVersion() string {
 	f := filepath.Join(p.Path, p.Cmd)
-	v, err := p.GetLatestVersion()
+	v, url, err := p.GetLatestVersion()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Can't get latest version.")
 		os.Exit(10)
 	}
 	bak := f + ".bak"
 	os.Rename(f, bak)
-	_, err = grab.Get(f, p.GetLatestDownloadURL())
+	_, err = grab.Get(f, url)
 	if err != nil {
 		os.Rename(bak, f)
 		fmt.Fprintf(os.Stderr, "Could not download update to %s: %s", p.GetCmd(), err)
@@ -125,13 +134,13 @@ func (p *GithubDirectDownloadProgram) DownloadLatestVersion() string {
 // DownloadLatestVersion downloads and untars a file to the bindir
 func (p *GithubDownloadUntarFileProgram) DownloadLatestVersion() string {
 	f := filepath.Join(p.Path, p.Cmd)
-	v, err := p.GetLatestVersion()
+	v, url, err := p.GetLatestVersion()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Can't get latest version.")
 		os.Exit(10)
 	}
 	err = file.ExtractFromTar(
-		p.GetLatestDownloadURL(),
+		url,
 		p.Filename,
 		f)
 	if err != nil {
@@ -148,13 +157,13 @@ func (p *GithubDownloadUntarFileProgram) DownloadLatestVersion() string {
 // DownloadLatestVersion downloads and unzips a file to the bindir
 func (p *GithubDownloadUnzipFileProgram) DownloadLatestVersion() string {
 	f := filepath.Join(p.Path, p.Cmd)
-	v, err := p.GetLatestVersion()
+	v, url, err := p.GetLatestVersion()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Can't get latest version.")
 		os.Exit(10)
 	}
 	err = file.ExtractFromZip(
-		p.GetLatestDownloadURL(),
+		url,
 		p.Filename,
 		f)
 	if err != nil {

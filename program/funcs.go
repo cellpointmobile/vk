@@ -36,7 +36,7 @@ func IsLatestVersion(p IProgram) bool {
 		return false
 	}
 	loV := p.GetLocalVersion()
-	laV, err := p.GetLatestVersion()
+	laV, _, err := p.GetLatestVersion()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Can't get latest version.")
 		os.Exit(10)

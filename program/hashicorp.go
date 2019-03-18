@@ -30,7 +30,7 @@ type HashicorpProgram struct {
 }
 
 // GetLatestVersion returns the latest version number available
-func (p *HashicorpProgram) GetLatestVersion() (string, error) {
+func (p *HashicorpProgram) GetLatestVersion() (string, string, error) {
 	cmd := p.GetCmd()
 	cache := os.ExpandEnv("$HOME/.vk/checkpoint-cache/" + cmd)
 	if ClearCache {
@@ -44,31 +44,25 @@ func (p *HashicorpProgram) GetLatestVersion() (string, error) {
 		fmt.Fprintf(os.Stderr, "Error getting version from Checkpoint: %s", err)
 		os.Exit(100)
 	}
-	return c.CurrentVersion, err
-}
-
-// GetLatestDownloadURL return the URL to download the latest version from
-func (p *HashicorpProgram) GetLatestDownloadURL() string {
-	cmd := p.GetCmd()
-	v, _ := p.GetLatestVersion()
+	v := c.CurrentVersion
 	r := strings.NewReplacer(
 		"{VERSION}", v,
-		"{VVERSION}", "v"+v,
 		"{CMD}", cmd)
-	url := "https://releases.hashicorp.com/{CMD}/{VERSION}/{CMD}_{VERSION}_linux_amd64.zip"
-	return r.Replace(url)
+	u := "https://releases.hashicorp.com/{CMD}/{VERSION}/{CMD}_{VERSION}_linux_amd64.zip"
+	url := r.Replace(u)
+	return v, url, err
 }
 
 // DownloadLatestVersion downloads and extracts the latest version
 func (p *HashicorpProgram) DownloadLatestVersion() string {
 	f := filepath.Join(p.Path, p.Cmd)
-	v, err := p.GetLatestVersion()
+	v, url, err := p.GetLatestVersion()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Can't get latest version.")
 		os.Exit(10)
 	}
 	err = file.ExtractFromZip(
-		p.GetLatestDownloadURL(),
+		url,
 		p.Cmd,
 		f)
 	if err != nil {

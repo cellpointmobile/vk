@@ -19,8 +19,7 @@ type IProgram interface {
 	GetCmd() string
 	GetFullPath() string
 	GetLocalVersion() string
-	GetLatestVersion() (string, error)
-	GetLatestDownloadURL() string
+	GetLatestVersion() (string, string, error)
 	IsInstalled() bool
 	DownloadLatestVersion() string
 }
