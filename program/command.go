@@ -36,7 +36,7 @@ func (p *Command) GetLocalVersion() string {
 	args := strings.Split(p.VersionArg, " ")
 	cmd := filepath.Join(p.Path, p.Cmd)
 	version := exec.Command(cmd, args...)
-	versionOut, err := version.Output()
+	versionOut, err := version.CombinedOutput()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error parsing version: %s", err)
 		os.Exit(60)
