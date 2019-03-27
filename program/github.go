@@ -139,9 +139,10 @@ func (p *GithubDownloadUntarFileProgram) DownloadLatestVersion() string {
 		fmt.Fprintln(os.Stderr, "Can't get latest version.")
 		os.Exit(10)
 	}
+	rx := strings.NewReplacer("{VERSION}", v)
 	err = file.ExtractFromTar(
 		url,
-		p.Filename,
+		rx.Replace(p.Filename),
 		f)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error extracting file from tarball: %s", err)
@@ -162,9 +163,10 @@ func (p *GithubDownloadUnzipFileProgram) DownloadLatestVersion() string {
 		fmt.Fprintln(os.Stderr, "Can't get latest version.")
 		os.Exit(10)
 	}
+	rx := strings.NewReplacer("{VERSION}", v)
 	err = file.ExtractFromZip(
 		url,
-		p.Filename,
+		rx.Replace(p.Filename),
 		f)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error extracting file from zip: %s", err)
