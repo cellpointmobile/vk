@@ -15,6 +15,7 @@
 package program
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -33,6 +34,7 @@ type GithubProgram struct {
 	ReleaseName string // Will be appended when generating Github download URL. Ex: kustomize_{VERSION}_linux_amd64
 	DownloadURL string // Optional, will be used instead of generating URL.
 	PreRelease  bool   // Accept prereleases. Defaults to false
+	TagName     string // Optional, will be used to find release. Ex: kustomize will find kustomize/v3.3.0. Used when multiple programs are released from the same repo.
 }
 
 // GithubDirectDownloadProgram downloads a file directly
@@ -64,29 +66,56 @@ func findAsset(r []*github.ReleaseAsset, name string) (*github.ReleaseAsset, err
 	return nil, errors.New("can't find asset")
 }
 
+func getLatestTag(ctx context.Context, client *github.Client, githubOwner string, githubRepo string) string {
+	tags, _, err := client.Repositories.ListTags(ctx, githubOwner, githubRepo, &github.ListOptions{})
+	if _, ok := err.(*github.RateLimitError); ok {
+		fmt.Println("Github rate limit hit, please add personal API token.")
+		return ""
+	}
+	var filteredTags []*string
+	for _, tag := range tags {
+		if strings.HasPrefix(*tag.Name, "kustomize") {
+			filteredTags = append(filteredTags, tag.Name)
+		}
+	}
+	return *filteredTags[0]
+}
+
 // GetLatestVersion returns the latest version available
 func (p *GithubProgram) GetLatestVersion() (string, string, error) {
 	var err error
 	var r *github.RepositoryRelease
 	var u string
+	var tag string
+	var v string
 	client, ctx := NewGithubClient()
-	if p.PreRelease {
-		listOptions := &github.ListOptions{PerPage: 1, Page: 1}
-		releases, _, err := client.Repositories.ListReleases(ctx, p.GithubOwner, p.GithubRepo, listOptions)
-		if _, ok := err.(*github.RateLimitError); ok {
-			fmt.Println("Github rate limit hit, please add personal API token.")
-			return "", "", err
-		}
-		r = releases[0]
-	} else {
-		latestRelease, _, err := client.Repositories.GetLatestRelease(ctx, p.GithubOwner, p.GithubRepo)
-		if _, ok := err.(*github.RateLimitError); ok {
-			fmt.Println("Github rate limit hit, please add personal API token.")
-			return "", "", err
-		}
-		r = latestRelease
+	releases, _, err := client.Repositories.ListReleases(ctx, p.GithubOwner, p.GithubRepo, &github.ListOptions{})
+	if _, ok := err.(*github.RateLimitError); ok {
+		fmt.Println("Github rate limit hit, please add personal API token.")
+		return "", "", err
 	}
-	v := strings.TrimPrefix(r.GetTagName(), "v")
+	if p.TagName != "" {
+		tag = getLatestTag(ctx, client, p.GithubOwner, p.GithubRepo)
+		fmt.Printf("Latest tag: %s\n", tag)
+	}
+	for _, release := range releases {
+		if *release.Prerelease == p.PreRelease {
+			if tag == "" {
+				r = release
+				break
+			} else {
+				if *release.TagName == tag {
+					r = release
+					break
+				}
+			}
+		}
+	}
+	if tag == "" {
+		v = strings.TrimPrefix(r.GetTagName(), "v")
+	} else {
+		v = strings.TrimPrefix(tag, p.TagName+"/")
+	}
 	rx := strings.NewReplacer("{VERSION}", v)
 	if p.DownloadURL == "" {
 		rn := rx.Replace(p.ReleaseName)
