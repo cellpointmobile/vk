@@ -68,7 +68,7 @@ func init() {
 	viper.BindPFlag("bindir", rootCmd.PersistentFlags().Lookup("bindir"))
 	viper.SetDefault("bindir", "$HOME/.local/bin")
 	viper.BindPFlag("definitions", rootCmd.PersistentFlags().Lookup("definitions"))
-	viper.SetDefault("definitions", "https://cellpointmobile.github.io/vk-definitions/vk-definitions.json")
+	viper.SetDefault("definitions", "https://raw.githubusercontent.com/cellpointmobile/vk-definitions/master/vk-definitions.json")
 
 	glogcobra.Init(rootCmd)
 }
