@@ -15,7 +15,6 @@
 package program
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -29,6 +28,7 @@ import (
 
 // GithubProgram is a Program released via Github
 type GithubProgram struct {
+	Command
 	GithubOwner string
 	GithubRepo  string
 	ReleaseName string // Will be appended when generating Github download URL. Ex: kustomize_{VERSION}_linux_amd64
@@ -39,20 +39,17 @@ type GithubProgram struct {
 
 // GithubDirectDownloadProgram downloads a file directly
 type GithubDirectDownloadProgram struct {
-	Command
 	GithubProgram
 }
 
 // GithubDownloadUntarFileProgram downloads a tarball and extracts a single file from it
 type GithubDownloadUntarFileProgram struct {
-	Command
 	GithubProgram
 	Filename string
 }
 
 // GithubDownloadUnzipFileProgram downloads a zip-file and extracts a single file from it
 type GithubDownloadUnzipFileProgram struct {
-	Command
 	GithubProgram
 	Filename string
 }
@@ -66,27 +63,11 @@ func findAsset(r []*github.ReleaseAsset, name string) (*github.ReleaseAsset, err
 	return nil, errors.New("can't find asset")
 }
 
-func getLatestTag(ctx context.Context, client *github.Client, githubOwner string, githubRepo string) string {
-	tags, _, err := client.Repositories.ListTags(ctx, githubOwner, githubRepo, &github.ListOptions{})
-	if _, ok := err.(*github.RateLimitError); ok {
-		fmt.Println("Github rate limit hit, please add personal API token.")
-		return ""
-	}
-	var filteredTags []*string
-	for _, tag := range tags {
-		if strings.HasPrefix(*tag.Name, "kustomize") {
-			filteredTags = append(filteredTags, tag.Name)
-		}
-	}
-	return *filteredTags[0]
-}
-
 // GetLatestVersion returns the latest version available
 func (p *GithubProgram) GetLatestVersion() (string, string, error) {
 	var err error
 	var r *github.RepositoryRelease
 	var u string
-	var tag string
 	var v string
 	client, ctx := NewGithubClient()
 	releases, _, err := client.Repositories.ListReleases(ctx, p.GithubOwner, p.GithubRepo, &github.ListOptions{})
@@ -94,27 +75,30 @@ func (p *GithubProgram) GetLatestVersion() (string, string, error) {
 		fmt.Println("Github rate limit hit, please add personal API token.")
 		return "", "", err
 	}
-	if p.TagName != "" {
-		tag = getLatestTag(ctx, client, p.GithubOwner, p.GithubRepo)
-		fmt.Printf("Latest tag: %s\n", tag)
-	}
+
+	// Loop through releases and find the correct release based on PreRelease status and TagName prefix
 	for _, release := range releases {
 		if *release.Prerelease == p.PreRelease {
-			if tag == "" {
+			if p.TagName == "" {
 				r = release
 				break
 			} else {
-				if *release.TagName == tag {
+				if strings.HasPrefix(*release.TagName, p.TagName) {
 					r = release
 					break
 				}
 			}
 		}
 	}
-	if tag == "" {
+
+	// Find version number based on tag
+	if p.TagName == "" {
+		// No TagName prefix specified, just trim away any prefixed "v"
 		v = strings.TrimPrefix(r.GetTagName(), "v")
 	} else {
-		v = strings.TrimPrefix(tag, p.TagName+"/")
+		// TagName prefix specified, first trim away TagName, then any remaining prefixed "v"
+		v = strings.TrimPrefix(r.GetTagName(), p.TagName)
+		v = strings.TrimPrefix(v, "/")
 	}
 	rx := strings.NewReplacer("{VERSION}", v)
 	if p.DownloadURL == "" {
@@ -141,7 +125,7 @@ func (p *GithubDirectDownloadProgram) DownloadLatestVersion() string {
 	f := filepath.Join(p.Path, p.Cmd)
 	v, url, err := p.GetLatestVersion()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Can't get latest version.")
+		fmt.Fprintf(os.Stderr, "%s: Can't get latest version.", p.Cmd)
 		os.Exit(10)
 	}
 	bak := f + ".bak"
