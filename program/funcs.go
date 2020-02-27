@@ -41,8 +41,16 @@ func IsLatestVersion(p IProgram) bool {
 		fmt.Fprintln(os.Stderr, "Can't get latest version.")
 		os.Exit(10)
 	}
-	localVersion := semver.MustParse(loV)
-	latestVersion := semver.MustParse(laV)
+	localVersion, err := semver.NewVersion(loV)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s: Can not parse local version: '%s'\n", p.GetCmd(), loV)
+		panic(err)
+	}
+	latestVersion, err := semver.NewVersion(laV)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s: Can not parse latest version: '%s'\n", p.GetCmd(), laV)
+		panic(err)
+	}
 	if localVersion.LessThan(latestVersion) {
 		return false
 	}
