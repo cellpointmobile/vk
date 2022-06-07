@@ -15,9 +15,7 @@ require (
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.1
-	github.com/tidwall/gjson v1.2.1
-	github.com/tidwall/match v1.0.1 // indirect
-	github.com/tidwall/pretty v0.0.0-20180105212114-65a9db5fad51 // indirect
+	github.com/tidwall/gjson v1.9.3
 	golang.org/x/oauth2 v0.0.0-20190220154721-9b3c75971fc9
 )
 
